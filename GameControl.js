@@ -17,8 +17,8 @@ class GameControl {
     start() {
         if (this.context != null) {
             this.init();
-            window.requestAnimationFrame(this.redraw);
             window.setInterval(this.update, 1000/60); //60FPS game-updates
+            this.redraw();
         }
     }
 
@@ -33,8 +33,9 @@ class GameControl {
 
 
 class GameSprite {
-    constructor() {
+    constructor(x = 0, y = 0) {
         this.frames = [];
+        this.origin = {x: x, y: y};
     }
 
     addFrame(src) {
@@ -65,19 +66,36 @@ class GameObject {
         this.image_speed = 1.0;
         this.sprite_index = 0;
         this.image_scale = {x: 1, y: 1};
+        this.angle = 0;
     }
 
     draw() {
         if (this.sprite.length != 0) {
-            var sprite = this.sprite[this.sprite_index];
-            var image = this.sprite[this.sprite_index].frames[Math.floor(this.image_index)];
-            this.context.drawImage(image, this.position.x, this.position.y, this.image_scale.x * image.width, this.image_scale.y * image.height);
+
+            if (this.sprite_index >= this.sprite.length) {
+                this.sprite_index = this.sprite.length - 1;
+            }
+            else if (this.sprite_index < 0) {
+                this.sprite_index = 0;
+            }
+
+            var sprite, image;
+            sprite = this.sprite[this.sprite_index];
+            image = this.sprite[this.sprite_index].frames[Math.floor(this.image_index)];
+
+            this.context.save();
+            this.context.translate(this.position.x, this.position.y);
+            this.context.rotate(this.angle);
+            this.context.scale(this.image_scale.x, this.image_scale.y);
+            this.context.drawImage(image, -sprite.origin.x, -sprite.origin.y, image.width, image.height);
+            this.context.restore();
+
             this.image_index += this.image_speed;
-            if (this.image_index >= sprite.length) {
+            if (this.image_index >= sprite.frames.length) {
                 this.image_index = 0;
             }
             else if (this.image_index < 0) {
-                this.image_index = sprite.length - 1;
+                this.image_index = sprite.frames.length - 1;
             }
         }
     }
