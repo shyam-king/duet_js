@@ -1,9 +1,17 @@
 //misc
+class ScoreItem {
+    constructor(name, score) {
+        this.name = name;
+        this.score = Number.parseInt(score);
+    }
+};
+
 var username_field = document.getElementById("username");
 var nameSubmit_button = document.getElementById("nameSubmitButton");
 var canPlay = false;
 var username = "";
 var scorecard_table = document.getElementById("scorecard");
+var initialScoreSet = [];
 
 nameSubmit_button.onclick = function() {
     if (username_field.value != "") {
@@ -13,35 +21,37 @@ nameSubmit_button.onclick = function() {
     }
 };
 
-function postScore() {
-    class DataItem {
-        constructor(name, score) {
-            this.name = name;
-            this.score = Number.parseInt(score);
-        }
-    };
-
-    var data = [];
-    var e = scorecard_table.getElementsByTagName("tr");
-    var i = 0;
-    while (i < e.length) {
-        var d = e[i].getElementsByTagName("td");
-        if (d.length == 3) {
-            if (d[1].innerHTML != "Jarvis") {
-                data.push(new DataItem(d[1].innerHTML, d[2].innerHTML));
-            }
-        }
-        i++;
+function readScore() {
+    initialScoreSet = [];
+    if (localStorage.getItem("highscores") != null) {
+        initialScoreSet = JSON.parse(localStorage.getItem("highscores"));
     }
+    scorecard_table.innerHTML = "<tr><th>S. No.</th><th>Name</th><th>Score</th></tr></tr><tr><td>1.</td><td>Jarvis</td><td>Infinity</td></tr>";
+    initialScoreSet.forEach(function(value, index, array){
+        var n = document.createElement("tr");
+        var td = document.createElement("td");
+        td.innerHTML = (index + 2) + ".";
+        n.appendChild(td);
 
-    data.push(new DataItem(username, score));
+        td = document.createElement("td");
+        td.innerHTML = value.name;
+        n.appendChild(td);
+        
+        td = document.createElement("td");
+        td.innerHTML = value.score;
+        n.appendChild(td);
+
+        scorecard_table.appendChild(n);
+    });
+}
+
+function postScore() {
+    var data = initialScoreSet.slice();
+    data.push(new ScoreItem(username, score));
+
     data.sort(function(a,b) {
         return b.score - a.score;
-    });
-
-    if (data.length > 9) {
-        data = data.slice(0, 9);
-    }
+    });console.log(data);
 
     scorecard_table.innerHTML = "<tr><th>S. No.</th><th>Name</th><th>Score</th></tr></tr><tr><td>1.</td><td>Jarvis</td><td>Infinity</td></tr>";
     data.forEach(function(value, index, array){
@@ -94,8 +104,8 @@ class IntroGameScreen extends GameControl {
             x: this.canvas.width/2,
             y: this.canvas.height/2 + 20
         };
-
         username = "";
+        readScore();
 
         //INPUT HANDLING
         introGameScreen.canvas.addEventListener("mousemove", this.mouseMove);
@@ -138,6 +148,8 @@ class IntroGameScreen extends GameControl {
         if (!canPlay) {
             obj_play_button.image_index = 0;
         }
+
+        readScore();
     }
 
     redraw() {
@@ -214,6 +226,8 @@ class DuetGameScreen extends GameControl {
 
         time += 1;
         score = Math.floor(time / 60);
+
+        postScore();
     }
 
     finalize() {
@@ -373,8 +387,12 @@ class ObjObstacle extends GameObject {
 
         //collision check
         if (this.inBox(obj_rishav.position.x, obj_rishav.position.y) || this.inBox(obj_phoebe.position.x, obj_phoebe.position.y)) {
-            postScore();
             duetGameScreen.stop();
+            initialScoreSet.push(new ScoreItem(username, score));
+            initialScoreSet.sort(function(a, b){
+                return b.score - a.score;
+            });
+            localStorage.setItem("highscores", JSON.stringify(initialScoreSet));
             introGameScreen.start();
         }
     }
