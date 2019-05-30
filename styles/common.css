@@ -1,3 +1,7 @@
+* {
+    box-sizing: border-box;
+}
+
 h1, p {
     font-family: 'Roboto';
 }
@@ -90,7 +94,6 @@ div.navbar {
 div.navbar a {
     text-decoration: none;
     color: white;
-    box-sizing: content-box;
 }
 
 div.content {
@@ -164,7 +167,6 @@ div.content {
 div.card {
     border: 1px;
     border-style: solid;
-    box-sizing: content-box;
     width:90%;
     margin: 8px auto;
     text-align: center;
@@ -186,7 +188,6 @@ div.card {
     border: 2px;
     border-color: white;
     border-style: solid;
-    box-sizing: content-box;
     margin-right: 8px;
     cursor: inherit;
 }

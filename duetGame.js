@@ -206,6 +206,8 @@ class DuetGameScreen extends GameControl {
         //INPUT HANDLING
         document.addEventListener("keydown", this.keyControl);
         duetGameScreen.canvas.addEventListener("mousedown", this.mouseDown);
+        duetGameScreen.canvas.addEventListener("mouseup", this.mouseUp);
+        document.addEventListener("keyup", this.mouseUp);
     }
 
     update() {
@@ -220,7 +222,9 @@ class DuetGameScreen extends GameControl {
 
     finalize() {
         document.removeEventListener("keydown", this.keyControl);
+        document.removeEventListener("keyup", this.mouseUp);
         duetGameScreen.canvas.removeEventListener("mousedown", this.mouseDown);
+        duetGameScreen.canvas.removeEventListener("mouseup", this.mouseUp);
     }
 
     keyControl(ev) {
@@ -260,6 +264,10 @@ class DuetGameScreen extends GameControl {
             }
         }
     }
+
+    mouseUp(ev) {
+        obj_player.angleSpeed = 0;
+    }
 };
 
 var duetGameScreen = new DuetGameScreen("gameDuet");
@@ -281,7 +289,7 @@ class ObjPlayer extends GameObject {
 
         this.radius = 50;
         this.speed = Math.PI * 2 / 180;
-        this.angleSpeed = this.speed;
+        this.angleSpeed = 0;
     }
 
     left() {
