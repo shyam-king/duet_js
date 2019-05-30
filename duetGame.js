@@ -166,8 +166,6 @@ function obstacleSpawnControl () {
     if (ObjObstacle.obstacleSpawning > 0) {
         ObjObstacle.obstacleSpawning -= 1;
     }
-
-    console.log(ObjObstacle.spawned.length);
 }
 
 function obstacleDrawControl() {
@@ -191,6 +189,20 @@ class ObjObstacle extends GameObject {
         if (this.position.y > duetGameScreen.canvas.height) {
             ObjObstacle.spawned.shift();
         }
+
+        //collision check
+        if (this.inBox(obj_rishav.position.x, obj_rishav.position.y) || this.inBox(obj_phoebe.position.x, obj_phoebe.position.y)) {
+            console.log("collide");
+        }
+    }
+
+    inBox(x, y) { // preliminary
+        if (x >= this.position.x - this.sprite[0].origin.x 
+            && x <= this.position.x - this.sprite[0].origin.x + this.sprite[0].frames[0].width
+            && y >= this.position.y - this.sprite[0].origin.y
+            && y <= this.position.y - this.sprite[0].origin.y + this.sprite[0].frames[0].height)
+            return true;
+        return false;
     }
 }
 ObjObstacle.obstacleSpeed = 4;
