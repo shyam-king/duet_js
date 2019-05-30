@@ -26,6 +26,11 @@ function readScore() {
     if (localStorage.getItem("highscores") != null) {
         initialScoreSet = JSON.parse(localStorage.getItem("highscores"));
     }
+
+    if (initialScoreSet.length > 9) {
+        initialScoreSet = initialScoreSet.slice(0,9);
+    }
+
     scorecard_table.innerHTML = "<tr><th>S. No.</th><th>Name</th><th>Score</th></tr></tr><tr><td>1.</td><td>Jarvis</td><td>Infinity</td></tr>";
     initialScoreSet.forEach(function(value, index, array){
         var n = document.createElement("tr");
