@@ -82,19 +82,16 @@ var spr_rishav = new GameSprite(8,8);
 spr_rishav.addFrame("res/rishav.png");
 var spr_phoebe = new GameSprite(8,8);
 spr_phoebe.addFrame("res/phoebe.png");
-var spr_arrow_right = new GameSprite(32,32);
+var spr_arrow_right = new GameSprite(30,30);
 spr_arrow_right.addFrame("res/arrow_right.png");
 var spr_background = new GameSprite();
 spr_background.addFrame("res/bg.png");
-var spr_obstacle_horiz = new GameSprite(50, 12.5);
+var spr_obstacle_horiz = new GameSprite(50, 25);
 spr_obstacle_horiz.addFrame("res/obstacle_horizontal.png");
-var spr_obstacle_vert = new GameSprite(12.5, 50);
+var spr_obstacle_vert = new GameSprite(25, 50);
 spr_obstacle_vert.addFrame("res/obstacle_vertical.png");
-var spr_play_button = new GameSprite(32,32);
-spr_play_button.addFrame("res/arrow_right.png"); // disabled
-spr_play_button.addFrame("res/arrow_right.png"); // normal
-spr_play_button.addFrame("res/arrow_right.png"); // hover 
-spr_play_button.addFrame("res/arrow_right.png"); // clicked
+var spr_play_button = new GameSprite(100,100);
+spr_play_button.addFrame("res/play_button.png"); 
 
 //game-specific global vars
 var time; 
@@ -113,28 +110,11 @@ class IntroGameScreen extends GameControl {
         readScore();
 
         //INPUT HANDLING
-        introGameScreen.canvas.addEventListener("mousemove", this.mouseMove);
         introGameScreen.canvas.addEventListener("mousedown", this.mouseDown);
     }
 
     finalize () {
         introGameScreen.canvas.removeEventListener("mousedown", this.mouseDown);
-        introGameScreen.canvas.removeEventListener("mousemove", this.mouseMove);
-    }
-
-    mouseMove (ev) {
-        var rect = introGameScreen.canvas.getBoundingClientRect();
-        var x = ev.clientX - rect.x;
-        var y = ev.clientY - rect.y;
-
-        if (canPlay) {
-            if (obj_play_button.inBox(x,y)) {
-                obj_play_button.image_index = 2;
-            }
-            else {
-                obj_play_button.image_index = 1;
-            }
-        }
     }
 
     mouseDown (ev) {
@@ -150,10 +130,6 @@ class IntroGameScreen extends GameControl {
     }
 
     update() {
-        if (!canPlay) {
-            obj_play_button.image_index = 0;
-        }
-
         readScore();
     }
 
@@ -166,9 +142,16 @@ class IntroGameScreen extends GameControl {
             obj_play_button.draw();
 
             ctx.save();
-            var x = canv.width/2 - ctx.measureText(username).width/2;
-            ctx.fillStyle = "rgba(255,255,255,1)";
-            ctx.fillText(username, x, canv.height/2 - 40);
+            ctx.font = "500 64px Roboto";
+            var text = "Duet";
+            ctx.fillStyle = "rgba(200,200,200,1)";
+            var x = canv.width/2 - ctx.measureText(text).width/2;
+            ctx.fillText(text, x, 100);
+
+            text = username;
+            ctx.font = "400 50px Roboto";
+            x = canv.width/2 - ctx.measureText(text).width/2;
+            ctx.fillText(text, x, 450);
             ctx.restore();
         }
         else {
@@ -208,8 +191,8 @@ class DuetGameScreen extends GameControl {
         obj_arrow_left.image_scale.x = -1;
         obj_arrow_left.position.y = this.canvas.height - 60;
         obj_arrow_right.position.y = this.canvas.height - 60;
-        obj_arrow_left.position.x = 50;
-        obj_arrow_right.position.x = this.canvas.width - 50;
+        obj_arrow_left.position.x = 65;
+        obj_arrow_right.position.x = this.canvas.width - 65;
 
         //game var initializations
         time = 0;
@@ -329,7 +312,8 @@ var obj_player = new ObjPlayer(duetGameScreen.context);
 //button objects
 class ObjButton extends GameObject {
     inBox(x, y) {
-        if (Math.abs(x - this.position.x) <= 32 && Math.abs(y - this.position.y) <= 32) 
+        if (Math.abs(x - this.position.x) <= this.sprite[0].origin.x 
+        && Math.abs(y - this.position.y) <= this.sprite[0].origin.y) 
             return true;
         return false;
     }
@@ -398,6 +382,7 @@ class ObjObstacle extends GameObject {
                 return b.score - a.score;
             });
             localStorage.setItem("highscores", JSON.stringify(initialScoreSet));
+            canPlay = false;
             introGameScreen.start();
         }
     }
@@ -434,8 +419,9 @@ class ObjHUD extends GameObject {
         this.context.strokeRect(90,10, 290, 50);
 
         this.context.fillStyle = "rgba(0,0,0,1)";
-        this.context.fillText("Player: " + username, 100, 20);
-        this.context.fillText("Score: " + score, 100, 40);
+        this.context.font = "300 16px Roboto";
+        this.context.fillText("Player: " + username, 100, 30);
+        this.context.fillText("Score: " + score, 100, 50);
         
         this.context.restore();
     }
