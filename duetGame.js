@@ -1,3 +1,18 @@
+//misc
+var username_field = document.getElementById("username");
+var nameSubmit_button = document.getElementById("nameSubmitButton");
+var canPlay = false;
+var username = "";
+var scorecard_table = document.getElementById("scorecard");
+
+nameSubmit_button.onclick = function() {
+    if (username_field.value != "") {
+        canPlay = true;
+        username =  username_field.value;
+        username_field.value = "";
+    }
+};
+
 //LOAD SPRITES
 var spr_rishav = new GameSprite(8,8);
 spr_rishav.addFrame("res/rishav.png");
@@ -16,30 +31,56 @@ spr_obstacle_vert.addFrame("res/obstacle_vertical.png");
 var time; 
 var score; //time in seconds
 
+//intro screen
+class IntroGameScreen extends GameControl {
+    init() {
+        console.log("intro init");
+    }
+
+    update() {
+
+    }
+
+    redraw() {
+        var ctx = introGameScreen.context;
+
+        if(GameSprite.loaded()) {
+            obj_bg.draw();
+
+        }
+        else {
+            ctx.save();
+            
+            ctx.fillStyle = "rgb(255,255,255)";
+            ctx.fillRect(0, 0, introGameScreen.canvas.width, introGameScreen.canvas.height);
+            
+            ctx.fillStyle = "rgb(0,0,0)";
+            ctx.fillText("Loading assets...", 10, 10);
+
+            ctx.restore();
+        }
+        window.requestAnimationFrame(introGameScreen.redraw);
+    }
+}
+var introGameScreen = new IntroGameScreen("gameDuet");
+
+
 // Main Gameplay Screen
 class DuetGameScreen extends GameControl {
     redraw() {
-        if (GameSprite.loaded()) {
-            obj_bg.draw();
-            obstacleDrawControl();
-            obj_player.draw();
-            obj_arrow_left.draw();
-            obj_arrow_right.draw();
+        obj_bg.draw();
+        obstacleDrawControl();
+        obj_player.draw();
+        obj_arrow_left.draw();
+        obj_arrow_right.draw();
 
-            obj_hud.draw();
-        } 
-        else {
-            //LOADING PAGE MAYBE   
-            duetGameScreen.context.fillStyle = "rgba(255,255,255,1)";
-            duetGameScreen.context.fillRect(0,0, duetGameScreen.canvas.width, duetGameScreen.canvas.height);
-            duetGameScreen.context.fillStyle = "rgb(0,0,0)";
-            duetGameScreen.context.fillText("Loading assets...", 10, 10);
-        }
-
+        obj_hud.draw();
+    
         window.requestAnimationFrame(duetGameScreen.redraw);
     }
 
     init() {
+        console.log("game init");
         //object(s) initializations
         obj_arrow_right.sprite.push(spr_arrow_right);
         obj_arrow_left.sprite.push(spr_arrow_right);
@@ -251,8 +292,8 @@ class ObjHUD extends GameObject {
         this.context.strokeRect(90,10, 290, 50);
 
         this.context.fillStyle = "rgba(0,0,0,1)";
-        this.context.fillText("Score: " + score, 100, 20);
-        this.context.fillText("Speed: " + ObjObstacle.obstacleSpeed, 100, 40);
+        this.context.fillText("Player: " + username, 100, 20);
+        this.context.fillText("Score: " + score, 100, 40);
         
         this.context.restore();
     }
@@ -264,4 +305,4 @@ class ObjHUD extends GameObject {
 var obj_hud = new ObjHUD(duetGameScreen.context);
 
 //initial screen
-duetGameScreen.start();
+introGameScreen.start();

@@ -3,30 +3,37 @@
         <title>Duet in JS</title> 
     
         <!--styling-->
-        <style>
-            div.gameContainer {
-                text-align: center;
-            }
-
-            div.gameContainer canvas {
-                border: 1px;
-                border-style: solid;
-                border-color: white;
-            }
-
-            body {
-                background-color: black;
-            }
-        </style>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500">
+        <link rel="stylesheet" type="text/css" href="./styles/reset.css">
+        <link rel="stylesheet" type="text/css" href="./styles/common.css">
         <!---->
     </head>
     <body>
-        
-    <div class="gameContainer" id="duetGameContainer">
-        <canvas id="gameDuet" width="300px" height="500px"><p>Your browser does not support canvas.</p></canvas>
-    </div>
+        <div class="content">
+            <h4>Duet</h4>
+            <p>Enter your name to begin: <input type="text" id="username"/> <button id="nameSubmitButton">Submit</button></p>
+            <div class="gameContainer" id="duetGameContainer">
+                <div style="display:inline-block;">
+                        <canvas id="gameDuet" width="300px" height="500px"><p>Your browser does not support canvas.</p></canvas>
+                </div>
+                <div style="display:inline-block; height:500px;">
+                    <table id="scorecard">
+                    <tr>
+                        <th>S. No.</th>
+                        <th>Name</th>
+                        <th>Score</th>
+                    </tr>
+                    <tr>
+                        <td>1. </td>
+                        <td>Shyam</td>
+                        <td>Infinity</td>
+                    </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-    <script src="GameControl.js"></script>
-    <script src="duetGame.js"></script>
+        <script src="GameControl.js"></script>
+        <script src="duetGame.js"></script>
     </body>
 </html>

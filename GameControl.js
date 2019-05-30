@@ -6,6 +6,7 @@ class GameControl {
         if (this.canvas.getContext) {
             this.context = this.canvas.getContext("2d");
         }
+        this.running = false;
     }
 
     init() {
@@ -18,6 +19,7 @@ class GameControl {
             this.init();
             this.interval = window.setInterval(this.update, 1000/60); //60FPS game-updates
             this.redraw();
+            this.running = true;
         }
     }
 
@@ -31,6 +33,7 @@ class GameControl {
 
     stop() {
         window.clearInterval(this.interval);
+        this.running = false;
     }
 };
 
@@ -104,5 +107,14 @@ class GameObject {
     }
 
     update() {
+    }
+
+    inBox(x, y, i = 0) { // preliminary collision (w/o scale and rotation)
+        if (x >= this.position.x - this.sprite[i].origin.x 
+            && x <= this.position.x - this.sprite[i].origin.x + this.sprite[i].frames[0].width
+            && y >= this.position.y - this.sprite[i].origin.y
+            && y <= this.position.y - this.sprite[i].origin.y + this.sprite[i].frames[0].height)
+            return true;
+        return false;
     }
 };
