@@ -12,6 +12,10 @@ spr_obstacle_horiz.addFrame("res/obstacle_horizontal.png");
 var spr_obstacle_vert = new GameSprite(12.5, 50);
 spr_obstacle_vert.addFrame("res/obstacle_vertical.png");
 
+//game-specific global vars
+var time; 
+var score; //time in seconds
+
 // Main Gameplay Screen
 class DuetGameScreen extends GameControl {
     redraw() {
@@ -21,6 +25,8 @@ class DuetGameScreen extends GameControl {
             obj_player.draw();
             obj_arrow_left.draw();
             obj_arrow_right.draw();
+
+            obj_hud.draw();
         } 
         else {
             //LOADING PAGE MAYBE   
@@ -34,6 +40,7 @@ class DuetGameScreen extends GameControl {
     }
 
     init() {
+        //object(s) initializations
         obj_arrow_right.sprite.push(spr_arrow_right);
         obj_arrow_left.sprite.push(spr_arrow_right);
         obj_arrow_left.image_scale.x = -1;
@@ -42,6 +49,13 @@ class DuetGameScreen extends GameControl {
         obj_arrow_right.position.y = this.canvas.height - 60;
         obj_arrow_left.position.x = 50;
         obj_arrow_right.position.x = this.canvas.width - 50;
+
+        //game var initializations
+        time = 0;
+        score = 0;
+        ObjObstacle.obstacleSpeed = 2;
+        ObjObstacle.spawned = [];
+        ObjObstacle.obstacleSpawning = 0;
 
         //INPUT HANDLING
         document.addEventListener("keydown", function(ev) {
@@ -86,6 +100,9 @@ class DuetGameScreen extends GameControl {
     update() {
         obj_player.update();
         obstacleSpawnControl();
+
+        time += 1;
+        score = Math.floor(time / 60);
     }
 };
 
@@ -156,7 +173,7 @@ function obstacleSpawnControl () {
         i -= 1;
         ObjObstacle.spawned[i].spawnIndex = i;
         ObjObstacle.spawned[i].sprite.push(ObjObstacle.spawnableTypes[type]);
-        ObjObstacle.obstacleSpawning = 100;
+        ObjObstacle.obstacleSpawning = 200 / ObjObstacle.obstacleSpeed;
     }
 
     ObjObstacle.spawned.forEach(function (value, index, array) {
@@ -166,6 +183,12 @@ function obstacleSpawnControl () {
     if (ObjObstacle.obstacleSpawning > 0) {
         ObjObstacle.obstacleSpawning -= 1;
     }
+    else if (ObjObstacle.obstacleSpawning < 0) {
+        ObjObstacle.obstacleSpawning = 0;
+    }
+
+    ObjObstacle.obstacleSpeed = 2 + Math.floor(score/50);
+    obj_player.speed = Math.PI * ObjObstacle.obstacleSpeed / 180;
 }
 
 function obstacleDrawControl() {
@@ -186,7 +209,7 @@ class ObjObstacle extends GameObject {
 
     update() {
         this.position.y += this.speed;
-        if (this.position.y > duetGameScreen.canvas.height) {
+        if (this.position.y > duetGameScreen.canvas.height + this.sprite[0].origin.y) {
             ObjObstacle.spawned.shift();
         }
 
@@ -211,6 +234,34 @@ ObjObstacle.spawnableTypes = [spr_obstacle_horiz, spr_obstacle_vert];
 ObjObstacle.spawnablePositions = [[100, 200], [100, 150, 200]];
 ObjObstacle.maxSpawn = 3;
 ObjObstacle.obstacleSpawning = 0;
+
+//HUD
+class ObjHUD extends GameObject {
+    constructor (context) {
+        super (context);
+    }
+
+    draw() {
+        this.context.save();
+
+        this.context.fillStyle = "rgba(255,255,255,0.5)";
+        this.context.strokeStyle = "rgba(0,0,0,1)";
+
+        this.context.fillRect(90, 10, 200, 50);
+        this.context.strokeRect(90,10, 290, 50);
+
+        this.context.fillStyle = "rgba(0,0,0,1)";
+        this.context.fillText("Score: " + score, 100, 20);
+        this.context.fillText("Speed: " + ObjObstacle.obstacleSpeed, 100, 40);
+        
+        this.context.restore();
+    }
+
+    update() {
+
+    }
+};
+var obj_hud = new ObjHUD(duetGameScreen.context);
 
 //initial screen
 duetGameScreen.start();
