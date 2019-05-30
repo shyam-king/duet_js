@@ -32,8 +32,13 @@ class GameControl {
     }
 
     stop() {
+        this.finalize();
         window.clearInterval(this.interval);
         this.running = false;
+    }
+
+    finalize() {
+
     }
 };
 
