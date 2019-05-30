@@ -52,7 +52,7 @@ function readScore() {
 
 function postScore() {
     var data = initialScoreSet.slice();
-    data.push(new ScoreItem(username, score));
+    data.push(new ScoreItem(username + " *", score));
 
     data.sort(function(a,b) {
         return b.score - a.score;
@@ -385,7 +385,18 @@ class ObjObstacle extends GameObject {
         //collision check
         if (this.inBox(obj_rishav.position.x, obj_rishav.position.y) || this.inBox(obj_phoebe.position.x, obj_phoebe.position.y)) {
             duetGameScreen.stop();
-            initialScoreSet.push(new ScoreItem(username, score));
+            var flag = false;
+            initialScoreSet.forEach(function(value, index, array){
+                if (value.name == username) {
+                    if (value.score < score) {
+                        value.score = score;
+                    }
+                    flag = true;
+                }
+            });
+
+            if(!flag)
+                initialScoreSet.push(new ScoreItem(username, score));
             initialScoreSet.sort(function(a, b){
                 return b.score - a.score;
             });
