@@ -26,6 +26,10 @@ var spr_obstacle_horiz = new GameSprite(50, 12.5);
 spr_obstacle_horiz.addFrame("res/obstacle_horizontal.png");
 var spr_obstacle_vert = new GameSprite(12.5, 50);
 spr_obstacle_vert.addFrame("res/obstacle_vertical.png");
+var spr_play_button = new GameSprite(32,32);
+spr_play_button.addFrame("res/arrow_right.png"); // normal
+spr_play_button.addFrame("res/arrow_right.png"); // hover 
+spr_play_button.addFrame("res/arrow_right.png"); // clicked
 
 //game-specific global vars
 var time; 
@@ -34,19 +38,55 @@ var score; //time in seconds
 //intro screen
 class IntroGameScreen extends GameControl {
     init() {
-        console.log("intro init");
+        obj_play_button.image_speed = 0;
+        obj_play_button.image_index = 0;
+        obj_play_button.sprite.push(spr_play_button);
+        obj_play_button.position = {
+            x: this.canvas.width/2,
+            y: this.canvas.height/2 + 20
+        };
+
+        //INPUT HANDLING
+        introGameScreen.canvas.addEventListener("mousemove", function(ev){
+            var rect = introGameScreen.canvas.getBoundingClientRect();
+            var x = ev.clientX - rect.x;
+            var y = ev.clientY - rect.y;
+
+            if (canPlay) {
+                if (obj_play_button.inBox(x,y)) {
+                    obj_play_button.angle = Math.PI/6;
+                    console.log("HIT");
+                }
+                else {
+                    obj_play_button.angle = 0;
+                    console.log("NOHIT");
+                }
+            }
+
+            console.log("(" + x +", " + y + ")");
+        });
+
     }
 
     update() {
-
+        if (!canPlay) {
+            obj_play_button.angle = -Math.PI/2;
+        }
     }
 
     redraw() {
         var ctx = introGameScreen.context;
+        var canv = introGameScreen.canvas;
 
         if(GameSprite.loaded()) {
             obj_bg.draw();
+            obj_play_button.draw();
 
+            ctx.save();
+            var x = canv.width/2 - ctx.measureText(username).width/2;
+            ctx.fillStyle = "rgba(255,255,255,1)";
+            ctx.fillText(username, x, canv.height/2 - 40);
+            ctx.restore();
         }
         else {
             ctx.save();
@@ -63,7 +103,6 @@ class IntroGameScreen extends GameControl {
     }
 }
 var introGameScreen = new IntroGameScreen("gameDuet");
-
 
 // Main Gameplay Screen
 class DuetGameScreen extends GameControl {
@@ -122,8 +161,9 @@ class DuetGameScreen extends GameControl {
         });
 
         duetGameScreen.canvas.addEventListener("mousedown", function(ev){
-            var x = ev.clientX - duetGameScreen.canvas.offsetLeft;
-            var y = ev.clientY - duetGameScreen.canvas.offsetTop;
+            var rect = duetGameScreen.canvas.getBoundingClientRect();
+            var x = ev.clientX - rect.x;
+            var y = ev.clientY - rect.y;
 
             //do something
             if (x >= 0 && x <= duetGameScreen.canvas.width && y >= 0 && y <= duetGameScreen.canvas.height) {
@@ -204,6 +244,7 @@ class ObjButton extends GameObject {
 }
 var obj_arrow_right = new ObjButton(duetGameScreen.context);
 var obj_arrow_left = new ObjButton(duetGameScreen.context);
+var obj_play_button = new ObjButton(introGameScreen.context);
 
 
 //obstacles
