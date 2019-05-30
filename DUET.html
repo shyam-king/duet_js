@@ -12,24 +12,23 @@
         <div class="content">
             <h4>Duet</h4>
             <p>Enter your name to begin: <input type="text" id="username"/> <button id="nameSubmitButton">Submit</button></p>
-            <div class="gameContainer" id="duetGameContainer">
-                <div style="display:inline-block;">
-                        <canvas id="gameDuet" width="300px" height="500px"><p>Your browser does not support canvas.</p></canvas>
-                </div>
-                <div style="display:inline-block; height:500px;">
-                    <table id="scorecard">
-                    <tr>
-                        <th>S. No.</th>
-                        <th>Name</th>
-                        <th>Score</th>
-                    </tr>
-                    <tr>
-                        <td>1. </td>
-                        <td>Jarvis</td>
-                        <td>Infinity</td>
-                    </tr>
-                    </table>
-                </div>
+            <div class="col-2 gameContainer">
+                    <canvas id="gameDuet" width="300px" height="500px"><p>Your browser does not support canvas.</p></canvas>
+            </div>
+            <div class="col-2">
+                <h4 style="text-align: center">High scores</h4>
+                <table id="scorecard">
+                <tr>
+                    <th>S. No.</th>
+                    <th>Name</th>
+                    <th>Score</th>
+                </tr>
+                <tr>
+                    <td>1. </td>
+                    <td>Jarvis</td>
+                    <td>Infinity</td>
+                </tr>
+                </table>
             </div>
         </div>
 
