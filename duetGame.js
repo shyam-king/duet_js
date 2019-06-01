@@ -386,7 +386,10 @@ obj_pause_button.sprite.push(spr_pause_button);
 function obstacleSpawnControl () {
     if (ObjObstacle.spawned.length < ObjObstacle.maxSpawn && ObjObstacle.obstacleSpawning == 0) {
         var type = Math.floor(Math.random() * ObjObstacle.spawnableTypes.length);
-        var i = ObjObstacle.spawned.push(new ObjObstacle(duetGameScreen.context, ObjObstacle.spawnablePositions[type]));
+        var i = ObjObstacle.spawned.push(new ObjObstacle(duetGameScreen.context, 
+                                            ObjObstacle.spawnablePositions[type], 
+                                            ObjObstacle.spawnableAngles[type], 
+                                            ObjObstacle.spawnableSpeed[type]));
         i -= 1;
         ObjObstacle.spawned[i].spawnIndex = i;
         ObjObstacle.spawned[i].sprite.push(ObjObstacle.spawnableTypes[type]);
@@ -415,17 +418,26 @@ function obstacleDrawControl() {
 }
 
 class ObjObstacle extends GameObject {
-    constructor(context, positions = [0]) {
+    constructor(context, positions = [0], angles = [0], angleSpeed = [0]) {
         super(context);
 
         this.position.x = positions[Math.floor(Math.random() * positions.length)];
+        if (score > 30)
+            this.angle = angles[Math.floor(Math.random() * angles.length)];
+        else
+            this.angle = angles[0];
         this.speed = ObjObstacle.obstacleSpeed;
         this.position.y = -100;
         this.spawnIndex = 0;
+        if (score > 75)
+            this.angleSpeed = angleSpeed[Math.floor(Math.random() * angleSpeed.length)];
+        else 
+            this.angleSpeed = angleSpeed[0];
     }
 
     update() {
         this.position.y += this.speed * DuetGameScreen.gameSpeed;
+        this.angle += this.angleSpeed * DuetGameScreen.gameSpeed;
         if (this.position.y > duetGameScreen.canvas.height + this.sprite[0].origin.y) {
             ObjObstacle.spawned.shift();
         }
@@ -477,10 +489,12 @@ class ObjObstacle extends GameObject {
 }
 ObjObstacle.obstacleSpeed = 2;
 ObjObstacle.spawned = [];
-ObjObstacle.spawnableTypes = [spr_obstacle_horiz, spr_obstacle_vert];
+ObjObstacle.spawnableTypes = [spr_obstacle_horiz, spr_obstacle_horiz];
 ObjObstacle.spawnablePositions = [[100, 200], [100, 150, 200]];
 ObjObstacle.maxSpawn = 3;
 ObjObstacle.obstacleSpawning = 0;
+ObjObstacle.spawnableAngles = [[0, -Math.PI/4, Math.PI/4], [Math.PI/2]];
+ObjObstacle.spawnableSpeed = [[0, Math.PI/60],[0]];
 
 //HUD
 class ObjHUD extends GameObject {
@@ -506,7 +520,7 @@ class ObjHUD extends GameObject {
     }
 
     update() {
-
+        
     }
 };
 var obj_hud = new ObjHUD(duetGameScreen.context);
