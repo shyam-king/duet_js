@@ -7,9 +7,11 @@ class ScoreItem {
 };
 
 var username_field = document.getElementById("username");
+var username2_field = document.getElementById("username2");
 var nameSubmit_button = document.getElementById("nameSubmitButton");
 var canPlay = false;
 var username = "";
+var username2 = "";
 var scorecard_table = document.getElementById("scorecard");
 var initialScoreSet = [];
 
@@ -18,6 +20,8 @@ nameSubmit_button.onclick = function() {
         canPlay = true;
         username =  username_field.value;
         username_field.value = "";
+        username2 = username2_field.value;
+        username2_field.value = "";
     }
 };
 
@@ -111,7 +115,10 @@ class IntroGameScreen extends GameControl {
             x: this.canvas.width/2,
             y: this.canvas.height/2 + 20
         };
-        username = "";
+        if (!canPlay)
+        {
+            username = "";
+        }
         readScore();
 
         //INPUT HANDLING
@@ -446,6 +453,11 @@ class ObjObstacle extends GameObject {
             });
             localStorage.setItem("highscores", JSON.stringify(initialScoreSet));
             canPlay = false;
+            if (username2 != "") {
+                username = username2;
+                username2 = "";
+                canPlay = true;
+            }
             introGameScreen.start();
         }
     }
