@@ -95,6 +95,8 @@ spr_play_button.addFrame("res/play_button.png");
 var spr_pause_button = new GameSprite(16,16);
 spr_pause_button.addFrame("res/pause.png");
 spr_pause_button.addFrame("res/unpause.png");
+var spr_restart_button = new GameSprite(16,16);
+spr_restart_button.addFrame("res/restart.png");
 
 //game-specific global vars
 var time; 
@@ -184,6 +186,7 @@ class DuetGameScreen extends GameControl {
 
         obj_hud.draw();
         obj_pause_button.draw();
+        obj_restart_button.draw();
     
         window.requestAnimationFrame(duetGameScreen.redraw);
     }
@@ -201,6 +204,8 @@ class DuetGameScreen extends GameControl {
         obj_pause_button.image_speed = 0;
         obj_pause_button.image_index = 0;
         obj_pause_button.position = {x: 26, y: 26};
+
+        obj_restart_button.position = {x: 66, y: 26};
 
         //game var initializations
         time = 0;
@@ -270,10 +275,14 @@ class DuetGameScreen extends GameControl {
             else if (obj_arrow_right.inBox(x,y)) {
                 obj_player.right();
             }
-
-            if (obj_pause_button.inBox(x, y)) {
+            else if (obj_pause_button.inBox(x, y)) {
                 obj_pause_button.togglePause();
             }
+            else if(obj_restart_button.inBox(x,y)) {
+                duetGameScreen.stop();
+                duetGameScreen.start();
+            }
+
         }
     }
 
@@ -344,6 +353,8 @@ obj_arrow_right.sprite.push(spr_arrow_right);
 obj_arrow_left.sprite.push(spr_arrow_right);
 var obj_play_button = new ObjButton(introGameScreen.context);
 obj_play_button.sprite.push(spr_play_button);
+var obj_restart_button = new ObjButton(duetGameScreen.context);
+obj_restart_button.sprite.push(spr_restart_button);
 
 class ObjPauseButton extends ObjButton {
     constructor (context) {
