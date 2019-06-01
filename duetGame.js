@@ -228,6 +228,10 @@ class DuetGameScreen extends GameControl {
         ObjObstacle.obstacleSpawning = 0;
         obj_player.speed = Math.PI * 2 / 180;
         obj_player.angle = 0;
+        obj_player.speed_multiplyer = 1;
+        obj_player.horlicksMode = 0;
+        obj_player.radius_p = 50;
+        obj_player.radius_r = 50;
 
         //INPUT HANDLING
         document.addEventListener("keydown", this.keyControl);
@@ -416,6 +420,14 @@ obj_pause_button.sprite.push(spr_pause_button);
 function obstacleSpawnControl () {
     if (ObjObstacle.spawned.length < ObjObstacle.maxSpawn && ObjObstacle.obstacleSpawning == 0) {
         var type = Math.floor(Math.random() * ObjObstacle.spawnableTypes.length);
+        if (type > 1) {
+            type = Math.floor(Math.random() * ObjObstacle.spawnableTypes.length);
+        }
+        if (type > 1) {
+            type = Math.floor(Math.random() * ObjObstacle.spawnableTypes.length);
+        }
+
+
         var i = ObjObstacle.spawned.push(new ObjObstacle(duetGameScreen.context, 
                                             ObjObstacle.spawnablePositions[type], 
                                             ObjObstacle.spawnableAngles[type], 
