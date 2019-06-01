@@ -222,7 +222,7 @@ class DuetGameScreen extends GameControl {
         obj_player.update();
         obstacleSpawnControl();
 
-        time += 1;
+        time += DuetGameScreen.gameSpeed;
         score = Math.floor(time / 60);
 
         postScore();
@@ -281,7 +281,7 @@ class DuetGameScreen extends GameControl {
         obj_player.angleSpeed = 0;
     }
 };
-
+DuetGameScreen.gameSpeed = 1; 
 var duetGameScreen = new DuetGameScreen("gameDuet");
 
 //Game objects
@@ -319,7 +319,7 @@ class ObjPlayer extends GameObject {
         obj_phoebe.position.x = this.position.x + this.radius * Math.cos(this.angle + Math.PI);
         obj_phoebe.position.y = this.position.y + this.radius * Math.sin(this.angle + Math.PI);
 
-        this.angle += this.angleSpeed;
+        this.angle += this.angleSpeed * DuetGameScreen.gameSpeed;
     }
 
     draw() {
@@ -355,9 +355,11 @@ class ObjPauseButton extends ObjButton {
         this.paused = ! this.paused;
         if (this.paused) {
             this.image_index = 1;
+            DuetGameScreen.gameSpeed = 0;
         }
         else {
             this.image_index = 0;
+            DuetGameScreen.gameSpeed = 1;
         }
     }
 }
@@ -381,7 +383,7 @@ function obstacleSpawnControl () {
     });
 
     if (ObjObstacle.obstacleSpawning > 0) {
-        ObjObstacle.obstacleSpawning -= 1;
+        ObjObstacle.obstacleSpawning -= DuetGameScreen.gameSpeed;
     }
     else if (ObjObstacle.obstacleSpawning < 0) {
         ObjObstacle.obstacleSpawning = 0;
@@ -408,7 +410,7 @@ class ObjObstacle extends GameObject {
     }
 
     update() {
-        this.position.y += this.speed;
+        this.position.y += this.speed * DuetGameScreen.gameSpeed;
         if (this.position.y > duetGameScreen.canvas.height + this.sprite[0].origin.y) {
             ObjObstacle.spawned.shift();
         }
