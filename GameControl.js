@@ -114,11 +114,18 @@ class GameObject {
     update() {
     }
 
-    inBox(x, y, i = 0) { // preliminary collision (w/o scale and rotation)
-        if (x >= this.position.x - this.sprite[i].origin.x 
-            && x <= this.position.x - this.sprite[i].origin.x + this.sprite[i].frames[0].width
-            && y >= this.position.y - this.sprite[i].origin.y
-            && y <= this.position.y - this.sprite[i].origin.y + this.sprite[i].frames[0].height)
+    inBox(x, y, i = 0) { //collision (with rotation)
+        let tx = x - this.position.x;
+        let ty = y - this.position.y;
+        let cos = Math.cos(this.angle);
+        let sin = Math.sin(this.angle);
+
+        let nx = (tx * cos +ty * sin);
+        let ny = ( -tx * sin + ty * cos);
+        if (nx >= this.position.x - this.sprite[i].origin.x 
+            && nx <= this.position.x - this.sprite[i].origin.x + this.sprite[i].frames[0].width
+            && ny >= this.position.y - this.sprite[i].origin.y
+            && ny <= this.position.y - this.sprite[i].origin.y + this.sprite[i].frames[0].height)
             return true;
         return false;
     }
