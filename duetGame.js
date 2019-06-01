@@ -108,6 +108,8 @@ spr_rishav_power.addFrame("res/rishav_power2.png");
 spr_rishav_power.addFrame("res/rishav_power1.png");
 spr_rishav_power.addFrame("res/rishav_power0.png");
 spr_rishav_power.addFrame("res/rishav_power1.png");
+var spr_flight = new GameSprite(32,32);
+spr_flight.addFrame("res/flight.png");
 
 //game-specific global vars
 var time; 
@@ -327,6 +329,7 @@ class ObjPlayer extends GameObject {
         this.speed = Math.PI * 2 / 180;
         this.angleSpeed = 0;
         this.horlicksMode = 0;
+        this.speed_multiplyer = 1;
     }
 
     left() {
@@ -344,10 +347,10 @@ class ObjPlayer extends GameObject {
         obj_phoebe.position.x = this.position.x + this.radius_p * Math.cos(this.angle + Math.PI);
         obj_phoebe.position.y = this.position.y + this.radius_p * Math.sin(this.angle + Math.PI);
 
-        this.angle += this.angleSpeed * DuetGameScreen.gameSpeed;
+        this.angle += this.angleSpeed * DuetGameScreen.gameSpeed * this.speed_multiplyer;
 
         if (this.horlicksMode > 0) {
-            this.horlicksMode -= 1;
+            this.horlicksMode -= 1 * DuetGameScreen.gameSpeed;
             obj_rishav.sprite_index = 1;
             if (this.horlicksMode < 200) 
                 obj_rishav.image_speed = 0.5;
@@ -355,6 +358,10 @@ class ObjPlayer extends GameObject {
         else {
             obj_rishav.sprite_index = 0;
             obj_rishav.image_speed = 0.25;
+        }
+
+        if (this.speed_multiplyer > 1) {
+            this.speed_multiplyer -= .001 * DuetGameScreen.gameSpeed;
         }
     }
 
@@ -474,6 +481,9 @@ class ObjObstacle extends GameObject {
                 if (this.type == ObjObstacle.spawnableTypes.indexOf(spr_horlicks)) {
                     obj_player.horlicksMode = 600;
                 }
+                else if (this.type == ObjObstacle.spawnableTypes.indexOf(spr_flight)) {
+                    obj_player.speed_multiplyer = 2;
+                }
                 else {
                     duetGameScreen.stop();
                     var flag = false;
@@ -521,16 +531,16 @@ class ObjObstacle extends GameObject {
 }
 ObjObstacle.obstacleSpeed = 2;
 ObjObstacle.spawned = [];
-ObjObstacle.spawnableTypes = [spr_obstacle_horiz, spr_obstacle_horiz, spr_horlicks];
-ObjObstacle.spawnablePositions = [[100, 200], [100, 150, 200], [100, 150, 200]];
+ObjObstacle.spawnableTypes = [spr_obstacle_horiz, spr_obstacle_horiz, spr_horlicks, spr_flight];
+ObjObstacle.spawnablePositions = [[100, 200], [100, 150, 200], [100, 150, 200], [150]];
 ObjObstacle.maxSpawn = 3;
 ObjObstacle.obstacleSpawning = 0;
 ObjObstacle.spawnableAngles = [[0, -Math.PI/4, Math.PI/4], 
                             [Math.PI/2, Math.PI/2 - Math.PI/12, Math.PI/2 + Math.PI/12],
-                            [0]];
+                            [0],[0]];
 ObjObstacle.spawnableSpeed = [[0, Math.PI/60, -Math.PI/60],
                             [0],
-                            [0]];
+                            [0],[0]];
 
 //HUD
 class ObjHUD extends GameObject {
