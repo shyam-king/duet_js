@@ -60,7 +60,7 @@ function postScore() {
 
     data.sort(function(a,b) {
         return b.score - a.score;
-    });console.log(data);
+    });
 
     scorecard_table.innerHTML = "<tr><th>S. No.</th><th>Name</th><th>Score</th></tr></tr><tr><td>1.</td><td>Jarvis</td><td>Infinity</td></tr>";
     data.forEach(function(value, index, array){
@@ -135,7 +135,6 @@ class IntroGameScreen extends GameControl {
         var y = ev.clientY - rect.y;
 
         if(canPlay && obj_play_button.inBox(x,y)) {
-            console.log("Let\'s play");
             introGameScreen.stop();
             duetGameScreen.start();
         }
@@ -199,8 +198,6 @@ class DuetGameScreen extends GameControl {
     }
 
     init() {
-        console.log("game init");
-
         //object(s) initializations
         obj_arrow_left.image_scale.x = -1;
         obj_arrow_left.position.y = this.canvas.height - 60;
@@ -434,6 +431,7 @@ class ObjObstacle extends GameObject {
         }
 
         //collision check
+        if(this.position.y >= 300)
         if (this.inBox(obj_rishav.position.x, obj_rishav.position.y) || this.inBox(obj_phoebe.position.x, obj_phoebe.position.y)) {
             duetGameScreen.stop();
             var flag = false;
@@ -462,12 +460,18 @@ class ObjObstacle extends GameObject {
         }
     }
 
-    inBox(x, y) { // preliminary
-        if (x >= this.position.x - this.sprite[0].origin.x 
-            && x <= this.position.x - this.sprite[0].origin.x + this.sprite[0].frames[0].width
-            && y >= this.position.y - this.sprite[0].origin.y
-            && y <= this.position.y - this.sprite[0].origin.y + this.sprite[0].frames[0].height)
+    inBox(x, y) { // collision involving rotation
+        let tx = x - this.position.x;
+        let ty = y - this.position.y;
+        let cos = Math.cos(this.angle);
+        let sin = Math.sin(this.angle);
+
+        let nx = Math.abs(tx * cos +ty * sin);
+        let ny = Math.abs( -tx * sin + ty * cos);
+        
+        if (nx <= this.sprite[0].origin.x && ny <= this.sprite[0].origin.y) {
             return true;
+        }
         return false;
     }
 }
