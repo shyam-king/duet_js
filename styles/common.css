@@ -233,20 +233,28 @@ div.card {
 .content [class*="col-"] {
     float: left;
     padding:4px;
+}
+
+.content .col-1 {
     width: 100%;
 }
 
-@media only screen and (min-width: 768px) {
-    .content .col-1 {
-        width: 100%;
-    }
-    .content .col-2 {
+.content .col-2 {
+    width: 50%;
+}
+
+.content .col-3 {
+    width: 33.33%;
+}
+
+@media only screen and (max-width: 1200px) {
+    .content .col-3 {
         width: 50%;
     }
-    .content .col-3 {
-        width: 33.33%;
-    }
-    .content .col-4 {
-        width: 25%;
+}
+
+@media only screen and (max-width: 768px) {
+    .content [class*="col-"] {
+        width: 100%;
     }
 }

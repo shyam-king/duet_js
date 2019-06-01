@@ -11,13 +11,16 @@
     <body>
         <div class="content">
             <h4>Duet</h4>
-            <p>Enter your name to begin*:<input type="text" id="username"/> <br><br>
-            Enter second player name (optional):<input type="text" id="username2"/> <br><br>
-            <button id="nameSubmitButton">Submit</button></p>
-            <div class="col-2 gameContainer">
+            <div class="col-3" style="text-align: center;">
+                <p style="text-align: center;">Enter your name to begin*:<br><br><input type="text" id="username"/> <br><br>
+                Enter second player name (optional):<br><br><input type="text" id="username2"/></p>
+                <button id="nameSubmitButton">Submit</button>
+            </div>
+            
+            <div class="col-3 gameContainer">
                     <canvas id="gameDuet" width="300px" height="500px"><p>Your browser does not support canvas.</p></canvas>
             </div>
-            <div class="col-2">
+            <div class="col-3">
                 <h4 style="text-align: center">High scores</h4>
                 <table id="scorecard">
                 <tr>
