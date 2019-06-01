@@ -493,8 +493,8 @@ ObjObstacle.spawnableTypes = [spr_obstacle_horiz, spr_obstacle_horiz];
 ObjObstacle.spawnablePositions = [[100, 200], [100, 150, 200]];
 ObjObstacle.maxSpawn = 3;
 ObjObstacle.obstacleSpawning = 0;
-ObjObstacle.spawnableAngles = [[0, -Math.PI/4, Math.PI/4], [Math.PI/2]];
-ObjObstacle.spawnableSpeed = [[0, Math.PI/60],[0]];
+ObjObstacle.spawnableAngles = [[0, -Math.PI/4, Math.PI/4], [Math.PI/2, Math.PI/2 - Math.PI/12, Math.PI/2 + Math.PI/12]];
+ObjObstacle.spawnableSpeed = [[0, Math.PI/60, -Math.PI/60],[0]];
 
 //HUD
 class ObjHUD extends GameObject {
