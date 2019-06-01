@@ -92,6 +92,9 @@ var spr_obstacle_vert = new GameSprite(25, 50);
 spr_obstacle_vert.addFrame("res/obstacle_vertical.png");
 var spr_play_button = new GameSprite(100,100);
 spr_play_button.addFrame("res/play_button.png"); 
+var spr_pause_button = new GameSprite(16,16);
+spr_pause_button.addFrame("res/pause.png");
+spr_pause_button.addFrame("res/unpause.png");
 
 //game-specific global vars
 var time; 
@@ -180,6 +183,7 @@ class DuetGameScreen extends GameControl {
         obj_arrow_right.draw();
 
         obj_hud.draw();
+        obj_pause_button.draw();
     
         window.requestAnimationFrame(duetGameScreen.redraw);
     }
@@ -193,6 +197,10 @@ class DuetGameScreen extends GameControl {
         obj_arrow_right.position.y = this.canvas.height - 60;
         obj_arrow_left.position.x = 65;
         obj_arrow_right.position.x = this.canvas.width - 65;
+
+        obj_pause_button.image_speed = 0;
+        obj_pause_button.image_index = 0;
+        obj_pause_button.position = {x: 26, y: 26};
 
         //game var initializations
         time = 0;
@@ -261,6 +269,10 @@ class DuetGameScreen extends GameControl {
             }
             else if (obj_arrow_right.inBox(x,y)) {
                 obj_player.right();
+            }
+
+            if (obj_pause_button.inBox(x, y)) {
+                obj_pause_button.togglePause();
             }
         }
     }
@@ -332,6 +344,25 @@ obj_arrow_right.sprite.push(spr_arrow_right);
 obj_arrow_left.sprite.push(spr_arrow_right);
 var obj_play_button = new ObjButton(introGameScreen.context);
 obj_play_button.sprite.push(spr_play_button);
+
+class ObjPauseButton extends ObjButton {
+    constructor (context) {
+        super (context);
+        this.paused = false;
+    }
+
+    togglePause() {
+        this.paused = ! this.paused;
+        if (this.paused) {
+            this.image_index = 1;
+        }
+        else {
+            this.image_index = 0;
+        }
+    }
+}
+var obj_pause_button = new ObjPauseButton(duetGameScreen.context);
+obj_pause_button.sprite.push(spr_pause_button);
 
 
 //obstacles
