@@ -82,16 +82,22 @@ class GameObject {
 
     draw() {
         if (this.sprite.length != 0) {
-
+            var sprite, image;
+            
             if (this.sprite_index >= this.sprite.length) {
                 this.sprite_index = this.sprite.length - 1;
             }
             else if (this.sprite_index < 0) {
                 this.sprite_index = 0;
             }
-
-            var sprite, image;
             sprite = this.sprite[this.sprite_index];
+
+            if (this.image_index >= sprite.frames.length) {
+                this.image_index = 0;
+            }
+            else if (this.image_index < 0) {
+                this.image_index = sprite.frames.length - 1;
+            }
             image = this.sprite[this.sprite_index].frames[Math.floor(this.image_index)];
 
             this.context.save();
@@ -102,12 +108,7 @@ class GameObject {
             this.context.restore();
 
             this.image_index += this.image_speed;
-            if (this.image_index >= sprite.frames.length) {
-                this.image_index = 0;
-            }
-            else if (this.image_index < 0) {
-                this.image_index = sprite.frames.length - 1;
-            }
+            
         }
     }
 

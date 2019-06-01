@@ -101,6 +101,13 @@ spr_pause_button.addFrame("res/pause.png");
 spr_pause_button.addFrame("res/unpause.png");
 var spr_restart_button = new GameSprite(16,16);
 spr_restart_button.addFrame("res/restart.png");
+var spr_horlicks = new GameSprite(25, 50);
+spr_horlicks.addFrame("res/horlicks.png");
+var spr_rishav_power = new GameSprite(16,16);
+spr_rishav_power.addFrame("res/rishav_power2.png");
+spr_rishav_power.addFrame("res/rishav_power1.png");
+spr_rishav_power.addFrame("res/rishav_power0.png");
+spr_rishav_power.addFrame("res/rishav_power1.png");
 
 //game-specific global vars
 var time; 
@@ -308,13 +315,18 @@ class ObjPlayer extends GameObject {
     constructor (context) {
         super(context);
         obj_rishav.sprite.push(spr_rishav);
+        obj_rishav.sprite.push(spr_rishav_power);
         obj_phoebe.sprite.push(spr_phoebe);
+        obj_rishav.sprite_index = 0;
+        obj_rishav.image_speed = 0.25;
         this.position.x = duetGameScreen.canvas.width / 2;
         this.position.y = duetGameScreen.canvas.height - 60;
 
-        this.radius = 50;
+        this.radius_r = 50;
+        this.radius_p = 50;
         this.speed = Math.PI * 2 / 180;
         this.angleSpeed = 0;
+        this.horlicksMode = 0;
     }
 
     left() {
@@ -326,13 +338,24 @@ class ObjPlayer extends GameObject {
     }
 
     update() {
-        obj_rishav.position.x = this.position.x + this.radius * Math.cos(this.angle);
-        obj_rishav.position.y = this.position.y + this.radius * Math.sin(this.angle);
+        obj_rishav.position.x = this.position.x + this.radius_r * Math.cos(this.angle);
+        obj_rishav.position.y = this.position.y + this.radius_r * Math.sin(this.angle);
 
-        obj_phoebe.position.x = this.position.x + this.radius * Math.cos(this.angle + Math.PI);
-        obj_phoebe.position.y = this.position.y + this.radius * Math.sin(this.angle + Math.PI);
+        obj_phoebe.position.x = this.position.x + this.radius_p * Math.cos(this.angle + Math.PI);
+        obj_phoebe.position.y = this.position.y + this.radius_p * Math.sin(this.angle + Math.PI);
 
         this.angle += this.angleSpeed * DuetGameScreen.gameSpeed;
+
+        if (this.horlicksMode > 0) {
+            this.horlicksMode -= 1;
+            obj_rishav.sprite_index = 1;
+            if (this.horlicksMode < 200) 
+                obj_rishav.image_speed = 0.5;
+        }
+        else {
+            obj_rishav.sprite_index = 0;
+            obj_rishav.image_speed = 0.25;
+        }
     }
 
     draw() {
@@ -389,7 +412,8 @@ function obstacleSpawnControl () {
         var i = ObjObstacle.spawned.push(new ObjObstacle(duetGameScreen.context, 
                                             ObjObstacle.spawnablePositions[type], 
                                             ObjObstacle.spawnableAngles[type], 
-                                            ObjObstacle.spawnableSpeed[type]));
+                                            ObjObstacle.spawnableSpeed[type],
+                                            type));
         i -= 1;
         ObjObstacle.spawned[i].spawnIndex = i;
         ObjObstacle.spawned[i].sprite.push(ObjObstacle.spawnableTypes[type]);
@@ -418,7 +442,7 @@ function obstacleDrawControl() {
 }
 
 class ObjObstacle extends GameObject {
-    constructor(context, positions = [0], angles = [0], angleSpeed = [0]) {
+    constructor(context, positions = [0], angles = [0], angleSpeed = [0], type = 0) {
         super(context);
 
         this.position.x = positions[Math.floor(Math.random() * positions.length)];
@@ -433,6 +457,7 @@ class ObjObstacle extends GameObject {
             this.angleSpeed = angleSpeed[Math.floor(Math.random() * angleSpeed.length)];
         else 
             this.angleSpeed = angleSpeed[0];
+        this.type = type;
     }
 
     update() {
@@ -443,32 +468,39 @@ class ObjObstacle extends GameObject {
         }
 
         //collision check
-        if(this.position.y >= 300)
-        if (this.inBox(obj_rishav.position.x, obj_rishav.position.y) || this.inBox(obj_phoebe.position.x, obj_phoebe.position.y)) {
-            duetGameScreen.stop();
-            var flag = false;
-            initialScoreSet.forEach(function(value, index, array){
-                if (value.name == username) {
-                    if (value.score < score) {
-                        value.score = score;
-                    }
-                    flag = true;
+        if(this.position.y >= 300) {
+            if ((this.inBox(obj_rishav.position.x, obj_rishav.position.y) && obj_player.horlicksMode == 0) 
+            || this.inBox(obj_phoebe.position.x, obj_phoebe.position.y)) {
+                if (this.type == ObjObstacle.spawnableTypes.indexOf(spr_horlicks)) {
+                    obj_player.horlicksMode = 600;
                 }
-            });
+                else {
+                    duetGameScreen.stop();
+                    var flag = false;
+                    initialScoreSet.forEach(function(value, index, array){
+                        if (value.name == username) {
+                            if (value.score < score) {
+                                value.score = score;
+                            }
+                            flag = true;
+                        }
+                    });
 
-            if(!flag)
-                initialScoreSet.push(new ScoreItem(username, score));
-            initialScoreSet.sort(function(a, b){
-                return b.score - a.score;
-            });
-            localStorage.setItem("highscores", JSON.stringify(initialScoreSet));
-            canPlay = false;
-            if (username2 != "") {
-                username = username2;
-                username2 = "";
-                canPlay = true;
-            }
-            introGameScreen.start();
+                    if(!flag)
+                        initialScoreSet.push(new ScoreItem(username, score));
+                    initialScoreSet.sort(function(a, b){
+                        return b.score - a.score;
+                    });
+                    localStorage.setItem("highscores", JSON.stringify(initialScoreSet));
+                    canPlay = false;
+                    if (username2 != "") {
+                        username = username2;
+                        username2 = "";
+                        canPlay = true;
+                    }
+                    introGameScreen.start();
+                }
+            }    
         }
     }
 
@@ -489,12 +521,16 @@ class ObjObstacle extends GameObject {
 }
 ObjObstacle.obstacleSpeed = 2;
 ObjObstacle.spawned = [];
-ObjObstacle.spawnableTypes = [spr_obstacle_horiz, spr_obstacle_horiz];
-ObjObstacle.spawnablePositions = [[100, 200], [100, 150, 200]];
+ObjObstacle.spawnableTypes = [spr_obstacle_horiz, spr_obstacle_horiz, spr_horlicks];
+ObjObstacle.spawnablePositions = [[100, 200], [100, 150, 200], [100, 150, 200]];
 ObjObstacle.maxSpawn = 3;
 ObjObstacle.obstacleSpawning = 0;
-ObjObstacle.spawnableAngles = [[0, -Math.PI/4, Math.PI/4], [Math.PI/2, Math.PI/2 - Math.PI/12, Math.PI/2 + Math.PI/12]];
-ObjObstacle.spawnableSpeed = [[0, Math.PI/60, -Math.PI/60],[0]];
+ObjObstacle.spawnableAngles = [[0, -Math.PI/4, Math.PI/4], 
+                            [Math.PI/2, Math.PI/2 - Math.PI/12, Math.PI/2 + Math.PI/12],
+                            [0]];
+ObjObstacle.spawnableSpeed = [[0, Math.PI/60, -Math.PI/60],
+                            [0],
+                            [0]];
 
 //HUD
 class ObjHUD extends GameObject {
