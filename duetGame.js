@@ -486,13 +486,16 @@ class ObjObstacle extends GameObject {
         this.position.y += this.speed * DuetGameScreen.gameSpeed;
         this.angle += this.angleSpeed * DuetGameScreen.gameSpeed;
         if (this.position.y > duetGameScreen.canvas.height + this.sprite[0].origin.y) {
-            ObjObstacle.spawned.shift();
+            ObjObstacle.spawned.splice(ObjObstacle.spawned.indexOf(this), 1);
         }
 
         //collision check
         if(this.position.y >= 300) {
             if ((this.inBox(obj_rishav.position.x, obj_rishav.position.y) && obj_player.horlicksMode == 0) 
             || this.inBox(obj_phoebe.position.x, obj_phoebe.position.y)) {
+
+                ObjObstacle.spawned.splice(ObjObstacle.spawned.indexOf(this), 1);
+
                 if (this.type == ObjObstacle.spawnableTypes.indexOf(spr_horlicks)) {
                     obj_player.horlicksMode = 600;
                 }
