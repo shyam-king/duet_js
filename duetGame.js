@@ -114,6 +114,7 @@ spr_flight.addFrame("res/flight.png");
 //game-specific global vars
 var time; 
 var score; //time in seconds
+var affection = 0;
 
 //intro screen
 class IntroGameScreen extends GameControl {
@@ -223,6 +224,7 @@ class DuetGameScreen extends GameControl {
         //game var initializations
         time = 0;
         score = 0;
+        affection = 0;
         ObjObstacle.obstacleSpeed = 2;
         ObjObstacle.spawned = [];
         ObjObstacle.obstacleSpawning = 0;
@@ -245,6 +247,7 @@ class DuetGameScreen extends GameControl {
         obstacleSpawnControl();
 
         time += DuetGameScreen.gameSpeed;
+        affection += DuetGameScreen.gameSpeed / 6;
         score = Math.floor(time / 60);
 
         postScore();
@@ -573,6 +576,10 @@ class ObjHUD extends GameObject {
         this.context.font = "300 16px Roboto";
         this.context.fillText("Player: " + username, 100, 30);
         this.context.fillText("Score: " + score, 100, 50);
+
+        //affection meter
+        this.context.strokeStyle = "rgba(255,255,255,1)";
+        this.context.strokeRect(250, 70, 18, 300);
         
         this.context.restore();
     }
