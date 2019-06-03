@@ -112,9 +112,7 @@ var spr_flight = new GameSprite(32,32);
 spr_flight.addFrame("res/flight.png");
 
 //game-specific global vars
-var time; 
-var score; //time in seconds
-var affection = 0;
+var time, score, affection, affectionMode;
 
 //intro screen
 class IntroGameScreen extends GameControl {
@@ -225,6 +223,7 @@ class DuetGameScreen extends GameControl {
         time = 0;
         score = 0;
         affection = 0;
+        affectionMode = 1;
         ObjObstacle.obstacleSpeed = 2;
         ObjObstacle.spawned = [];
         ObjObstacle.obstacleSpawning = 0;
@@ -247,8 +246,12 @@ class DuetGameScreen extends GameControl {
         obstacleSpawnControl();
 
         time += DuetGameScreen.gameSpeed;
-        affection += DuetGameScreen.gameSpeed / 6;
+        affection += DuetGameScreen.gameSpeed / 20 * affectionMode;
         score = Math.floor(time / 60);
+
+        if (affection >= 100 || affection <= 0) {
+            affectionMode = 0;
+        }
 
         postScore();
     }
@@ -369,6 +372,21 @@ class ObjPlayer extends GameObject {
 
         if (this.speed_multiplyer > 1) {
             this.speed_multiplyer -= .001 * DuetGameScreen.gameSpeed;
+        }
+
+        if (!affectionMode) {
+            if (affection > 50) {
+                if (this.radius_p > -this.radius_r) 
+                    this.radius_p -= 1;
+                else 
+                    affectionMode = -2;
+            }
+            else {
+                if (this.radius_p < this.radius_r)
+                    this.radius_p += 1;
+                else    
+                    affectionMode = 1;
+            }
         }
     }
 
@@ -583,6 +601,11 @@ class ObjHUD extends GameObject {
         //affection meter
         this.context.strokeStyle = "rgba(255,255,255,1)";
         this.context.strokeRect(250, 70, 18, 300);
+        if (affectionMode == 1)
+            this.context.fillStyle = "rgba(255,255,255,0.80)";
+        else 
+            this.context.fillStyle = "rgba(255,255,255,1)";
+        this.context.fillRect(252, 368 - affection*2.94, 14, affection * 2.94);
         
         this.context.restore();
     }
