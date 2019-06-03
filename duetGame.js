@@ -110,6 +110,8 @@ spr_rishav_power.addFrame("res/rishav_power0.png");
 spr_rishav_power.addFrame("res/rishav_power1.png");
 var spr_flight = new GameSprite(32,32);
 spr_flight.addFrame("res/flight.png");
+var spr_player_merge = new GameSprite(8,8);
+spr_player_merge.addFrame("res/rishav_phoebe_merge.png");
 
 //game-specific global vars
 var time, score, affection, affectionMode;
@@ -328,6 +330,7 @@ class ObjPlayer extends GameObject {
         super(context);
         obj_rishav.sprite.push(spr_rishav);
         obj_rishav.sprite.push(spr_rishav_power);
+        obj_rishav.sprite.push(spr_player_merge);
         obj_phoebe.sprite.push(spr_phoebe);
         obj_rishav.sprite_index = 0;
         obj_rishav.image_speed = 0.25;
@@ -359,21 +362,7 @@ class ObjPlayer extends GameObject {
 
         this.angle += this.angleSpeed * DuetGameScreen.gameSpeed * this.speed_multiplyer;
 
-        if (this.horlicksMode > 0) {
-            this.horlicksMode -= 1 * DuetGameScreen.gameSpeed;
-            obj_rishav.sprite_index = 1;
-            if (this.horlicksMode < 200) 
-                obj_rishav.image_speed = 0.5;
-        }
-        else {
-            obj_rishav.sprite_index = 0;
-            obj_rishav.image_speed = 0.25;
-        }
-
-        if (this.speed_multiplyer > 1) {
-            this.speed_multiplyer -= .001 * DuetGameScreen.gameSpeed;
-        }
-
+        //affection meter control
         if (!affectionMode) {
             if (affection > 50) {
                 if (this.radius_p > -this.radius_r) 
@@ -387,6 +376,28 @@ class ObjPlayer extends GameObject {
                 else    
                     affectionMode = 1;
             }
+        }
+        else if (affectionMode < 0) {
+            obj_rishav.sprite_index = 2;
+        }
+        else {
+            obj_rishav.sprite_index = 0;
+        }
+
+        //horlicks mode control
+        if (this.horlicksMode > 0) {
+            this.horlicksMode -= 1 * DuetGameScreen.gameSpeed;
+            obj_rishav.sprite_index = 1;
+            if (this.horlicksMode < 200) 
+                obj_rishav.image_speed = 0.5;
+        }
+        else {
+            obj_rishav.sprite_index = 0;
+            obj_rishav.image_speed = 0.25;
+        }
+
+        if (this.speed_multiplyer > 1) {
+            this.speed_multiplyer -= .001 * DuetGameScreen.gameSpeed;
         }
     }
 
@@ -509,18 +520,22 @@ class ObjObstacle extends GameObject {
 
         //collision check
         if(this.position.y >= 300) {
-            if ((this.inBox(obj_rishav.position.x, obj_rishav.position.y) && obj_player.horlicksMode == 0) 
-            || this.inBox(obj_phoebe.position.x, obj_phoebe.position.y)) {
+
+            let rContact = this.inBox(obj_rishav.position.x, obj_rishav.position.y);
+            let pContact = this.inBox(obj_phoebe.position.x, obj_phoebe.position.y);
+
+            if (rContact || pContact) {
 
                 ObjObstacle.spawned.splice(ObjObstacle.spawned.indexOf(this), 1);
 
                 if (this.type == ObjObstacle.spawnableTypes.indexOf(spr_horlicks)) {
-                    obj_player.horlicksMode = 600;
+                    if (rContact)
+                        obj_player.horlicksMode = 600;
                 }
                 else if (this.type == ObjObstacle.spawnableTypes.indexOf(spr_flight)) {
                     obj_player.speed_multiplyer = 2;
                 }
-                else {
+                else if ((rContact && obj_player.horlicksMode==0) || (pContact && affectionMode == 1)){
                     duetGameScreen.stop();
                     var flag = false;
                     initialScoreSet.forEach(function(value, index, array){
